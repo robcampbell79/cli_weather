@@ -91,11 +91,13 @@ func(m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.weather = append(m.weather, "Temprature: "+strconv.Itoa(p.Temp)+"\n")
 				theForecast := wrapper.WrapString(p.Forecast, 15)
 				m.weather = append(m.weather, "Forecast: "+theForecast+"\n")
+				m.weather = append(m.weather, "------------------------------------------\n")
 				
 				m.viewport.SetContent(strings.Join(m.weather, "\n"))
-				m.textInput.Reset()
-				m.viewport.GotoTop()
 			}
+
+			m.textInput.Reset()
+			m.viewport.GotoTop()
 		}
 	}
 

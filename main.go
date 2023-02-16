@@ -4,6 +4,7 @@ import(
 	"fmt"
 	"strconv"
 	"strings"
+	"cli_weather/latlong"
 	"cli_weather/forecast"
 	"cli_weather/wrapper"
 
@@ -85,15 +86,24 @@ func(m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			m.weather = nil
 			m.viewport.SetContent(strings.Join(m.weather, ""))
-			m.weather = append(m.weather, state+", "+city+"\n")
-			for _, p := range forecast.GetForecast(state, cityfrm) {
-				m.weather = append(m.weather, p.Name+"\n")
-				m.weather = append(m.weather, "Temprature: "+strconv.Itoa(p.Temp)+"\n")
-				theForecast := wrapper.WrapString(p.Forecast, 15)
-				m.weather = append(m.weather, "Forecast: "+theForecast+"\n")
-				m.weather = append(m.weather, "------------------------------------------\n")
-				
-				m.viewport.SetContent(strings.Join(m.weather, "\n"))
+
+			isEmpty := latlong.CheckIfEmpty(state, cityfrm)
+
+			if isEmpty == 1 {
+				m.weather = append(m.weather, "There appears to be an error, please check your spelling.\n")
+				m.weather = append(m.weather, "\n"+state+", "+city+"\n")
+				m.viewport.SetContent(strings.Join(m.weather, ""))
+			} else {
+				m.weather = append(m.weather, state+", "+city+"\n")
+				for _, p := range forecast.GetForecast(state, cityfrm) {
+					m.weather = append(m.weather, p.Name+"\n")
+					m.weather = append(m.weather, "Temprature: "+strconv.Itoa(p.Temp)+"\n")
+					theForecast := wrapper.WrapString(p.Forecast, 15)
+					m.weather = append(m.weather, "Forecast: "+theForecast+"\n")
+					m.weather = append(m.weather, "------------------------------------------\n")
+					
+					m.viewport.SetContent(strings.Join(m.weather, "\n"))
+				}
 			}
 
 			m.textInput.Reset()
